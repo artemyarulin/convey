@@ -57,4 +57,19 @@ Rx.Observable.concat(Rx.Observable.fromArray([1,2]),
 
 RxJS has a concept of error which would avoid any attached process steps and goes directly to subscriber error handler (or throws if there is no such). In order to do the same we have to somehow avoid attached transducers and send `Error` value directly to the channel.
 
-There is one solution for that - we can stop thansducers chain using `reduced` value and at the same time send a value directly to core.async buffer using standard `add!` function. And now core.async error handling with transducers is complete.
+There is one solution for that - we can stop thansducers chain using `reduced` value and at the same time send a value directly to core.async buffer using standard `add!` function. And now can you can just put `t-err` as a first transducer:
+
+```clojure
+(def in (async/to-chan [1 2 (js/Error. "Err")]))
+(def out (async/chan))
+
+(async/pipeline 1 out (comp t-err (map inc)) in)
+
+(go
+ (try
+     (.log js/console (<? out)) ;; 2
+     (.log js/console (<? out)) ;; 3
+     (.log js/console (<? out)) 
+ (catch js/Error e
+     (.error js/console e))))   ;; Error: Err
+```
