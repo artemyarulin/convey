@@ -1,5 +1,5 @@
 # rp-transducers
-A set of additional transducers inspired by reactive programming (specifically RxJS). Support Clojure and ClojureScript
+A set of additional transducers inspired by reactive programming (specifically RxJS). Supports Clojure and ClojureScript
 
 [![Clojars Project](http://clojars.org/rp-transducers/latest-version.svg)](http://clojars.org/rp-transducers)
 
