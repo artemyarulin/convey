@@ -31,6 +31,7 @@
          (catch #?(:clj Exception :cljs js/Error) e (put! c e)))
     c))
 
+#?(:clj
 (defmacro <?
   "Waits for value from the channel and throws if it is js/Error or Exception. 
   Accept additionally on-error and on-success handlers (could be simple values) which would be called. 
@@ -48,4 +49,4 @@
           (err-handler# res#))
         (if (= :undefined ~on-suc)
           res#
-          (suc-handler# res#))))))
+          (suc-handler# res#)))))))
