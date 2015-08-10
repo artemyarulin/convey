@@ -1,7 +1,8 @@
-# rp-transducers
+# rp-transducers [![Circle CI](https://circleci.com/gh/artemyarulin/rp-transducers.svg?style=svg)](https://circleci.com/gh/artemyarulin/rp-transducers)
 A set of additional transducers inspired by reactive programming (specifically RxJS). Supports Clojure and ClojureScript
 
 [![Clojars Project](http://clojars.org/rp-transducers/latest-version.svg)](http://clojars.org/rp-transducers)
+
 
 
 # Why
@@ -76,3 +77,14 @@ There is one solution for that - we can stop thansducers chain using `reduced` v
  (catch js/Error e
      (.error js/console e))))   ;; Error: Err
 ```
+
+# Making async life easier
+
+`rp-transducers.async` contains functions with simplifies your `core.async` code:
+
+- `flatmap(channel,transducer)` - Handy for processing channel of channels. Be informed that channel is flattened using `into`, so it wouldn't work if you have a channel that produces channels infinitly
+- `pipe(ch,transducer)` - Standard `core.async` `pipe` function doesn't apply transducer, while `pipeline` requires creating channel first. Just a shortcut
+- `<<<(func, & args)` - Convert callback functions to a channel and feel free to attach transducers using `pipe`
+- `<?(ch,on-error,on-success)` - Extended version of error handler from David Nolen. When only one parameter passed - throws if value is js/Error or Exception. If second parameter is passed (could be just a value or a function) - it will be returned or called instead of throwing. If third parameter is passed - it will be returned or called in success scenario.
+
+
