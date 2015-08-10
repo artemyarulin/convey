@@ -1,8 +1,8 @@
 (ns rp-transducers.async
+  #?(:clj (:require [clojure.core.async :refer [go]])
+     :cljs (:require-macros [cljs.core.async.macros :refer [go]]))
   (:require [#?(:clj  clojure.core.async
-                :cljs cljs.core.async)
-             :as async
-             :refer [<! chan pipeline go close! put!]]))
+                :cljs cljs.core.async) :as async :refer [<! chan pipeline close! put!]]))
 
 (defn flatmap
   "Receiving channel of channel unpack all the values and return new channel with 
