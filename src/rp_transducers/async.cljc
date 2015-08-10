@@ -41,7 +41,7 @@
   ([ch on-err on-suc]
    `(let [err-handler# (if (fn? ~on-err) ~on-err (constantly ~on-err))
           suc-handler# (if (fn? ~on-suc) ~on-suc (constantly ~on-suc))
-          res# (~'async/<! ~ch)
+          res# (async/<! ~ch)
           res-is-error# (instance? #?(:clj Exception :cljs js/Error) res#)]
       (if res-is-error#
         (if (= :undefined ~on-err)
