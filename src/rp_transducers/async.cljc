@@ -33,7 +33,7 @@
 
 #?(:clj
 (defmacro <?
-  "Waits for value from the channel and throws if it is js/Error or Exception. 
+  "Waits for value from the channel and throws if it is js/Error
   Accept additionally on-error and on-success handlers (could be simple values) which would be called. 
   :undefined is used as a no-value, because nil is accepted value"
   ([ch] `(<? ~ch :undefined))
@@ -42,7 +42,7 @@
    `(let [err-handler# (if (fn? ~on-err) ~on-err (constantly ~on-err))
           suc-handler# (if (fn? ~on-suc) ~on-suc (constantly ~on-suc))
           res# (~'<! ~ch)
-          res-is-error# (instance? #?(:clj Exception :cljs js/Error) res#)]
+          res-is-error# (instance? js/Error res#)]
       (if res-is-error#
         (if (= :undefined ~on-err)
           (throw res#)

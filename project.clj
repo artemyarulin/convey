@@ -1,4 +1,4 @@
-(defproject rp-transducers "0.0.8"
+(defproject rp-transducers "0.0.9"
   :description "A set of additional transducers inspired by reactive programming (specifically RxJS)"
   :url "https://github.com/artemyarulin/rp-transducers"
   :license {:name "Eclipse Public License"

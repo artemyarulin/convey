@@ -1,7 +1,7 @@
 (ns rp-transducers.unit
   (:use clojure.test)
   (:require [rp-transducers.core :refer [t-do t-zip t-err]]
-            [rp-transducers.async :refer [flatmap pipe <<< <?]]
+            [rp-transducers.async :refer [flatmap pipe <<<]]
             [clojure.core.async :as async :refer [go <!]]))
 
 (deftest t-zip-case
@@ -50,41 +50,3 @@
 (deftest <<<-error
   (let [f (fn[v cb] (cb (Exception. "Error")))]
     (async/<!! (go (is (instance? Exception (async/<! (<<< f true))))))))
-
-(deftest <?-normal
-  (let [f (fn[v cb] (cb v))]
-    (async/<!! (go  (is (= true (<? (<<< f true))))))))
-
-(deftest <?-normal-with-alt
-  (let [f (fn[v cb] (cb v))]
-    (async/<!! (go (is (= true (<? (<<< f true) false)))))))
-
-(deftest <?-error
-  (let [f (fn[v cb] (throw (Exception. "Error")))]
-    (async/<!! (go
-      (try 
-        (<? (<<< f true))
-        (catch Exception e 
-          (is (instance? Exception e))))))))
-
-(deftest <?-err-with-alt
-  (let [f (fn[v cb] (throw (Exception. "Error")))]
-    (async/<!! (go (is (= true (<? (<<< f true) true)))))))
-
-(deftest <?-err-succ
-  (let [fe (fn[v cb] (cb (Exception. "Error")))
-        fs (fn[v cb] (cb 42))]
-    (async/<!! (go
-      (is (= true (<? (<<< fe true) true false)))
-      (is (= 0 (<? (<<< fe true) (constantly 0))))
-      (is (= 42 (<? (<<< fs true) true)))
-      (is (= true (<? (<<< fs true) false true)))
-      (is (= 0 (<? (<<< fs true) false #(- 42 %))))))))
-
-(deftest <?-nil
-  (let [f (fn[v cb] (cb v))]
-    (async/<!! (go
-      (is (= nil (<? (<<< f nil))))
-      (is (= nil (<? (<<< f (Exception. "Error")) nil)))
-      (is (= nil (<? (<<< f (Exception. "Error")) nil nil)))
-      (is (= nil (<? (<<< f 42) nil nil)))))))
