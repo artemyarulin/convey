@@ -1,7 +1,6 @@
 (ns rp-transducers.unit
   (:use clojure.test)
-  (:require [rp-transducers.core :refer [t-do t-zip t-err]]
-            [rp-transducers.async :refer [flatmap pipe <<<]]
+  (:require [rp-transducers.core :refer [t-do t-zip t-err flatmap pipe <<<]]
             [clojure.core.async :as async :refer [go <!]]))
 
 (deftest t-zip-case
