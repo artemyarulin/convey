@@ -1,90 +1,30 @@
-# rp-transducers [![Circle CI](https://circleci.com/gh/artemyarulin/rp-transducers.svg?style=svg)](https://circleci.com/gh/artemyarulin/rp-transducers)
-A set of additional transducers inspired by reactive programming (specifically RxJS). Supports Clojure and ClojureScript
+# convey [![Circle CI](https://circleci.com/gh/artemyarulin/rp-transducers.svg?style=svg)](https://circleci.com/gh/artemyarulin/rp-transducers) 
 
 [![Clojars Project](http://clojars.org/rp-transducers/latest-version.svg)](http://clojars.org/rp-transducers)
 
-
-
-# Why
-
-Transducers is a very powerfull concept and combined with core.async it can give you the same power as using libraries like RxJS. Standard library contains most of the transducers you may need (filter, map, mapcat, etc.) but there are couple of things that are missing:
-
-- `t-do` - For side affects, useful for logging purposes
-- `t-zip` - Same as zipmap
-- `t-err` - Easy error handling
-
-# Example
-
-```clojure
-;; Returns [0 1 2] and logs numbers to console at the same time
-(into [] (t-do print) (range 3)) 
-
-;; Returns [{:a 0} {:b 1} {:c 2}]
-(into [] (t-zip [:a :b :c]) (range 3))
-```
-
-# Transducers and core.async error handling
-
-core.async doesn't provide any solution for error handling, it is up to developer to decide how it can be resolved. You may read an article of David Nolen about it [Asynchronous Error Handling](http://swannodette.github.io/2013/08/31/asynchronous-error-handling/). He proposes one small `<?` macro which allows you to utilize `try catch`:
+Reactive programming implemented using transducers. Supports Clojure and ClojureScript
 
 ``` clojure
-(go (try (<? do-staff-async)
-    (catch js/Error e (handle-error e))))
+(def folders
+    (async/to-chan ["folder1" "folder2"]))
+(defn is-exists [abs-path]
+    (async/to-chan [(= abs-path "/tmp/folder1")]))
+(defn ls [abs-path] 
+    (async/to-chan [(map (partial str abs-path "/file") (range 10))]))
+
+(convey folders
+        (<| map (partial str "/tmp/"))
+        (<| filter is-exists)
+        (<| map ls)
+        (<! take 3)
+        (<! (t-do println)))
+
+;; Output: /tmp/folder1/file0
+;;         /tmp/folder1/file1
+;;         /tmp/folder1/file2
 ```
 
-It works just fine and allows you to separate your error handling from executing code, but problem arise when you attach transducers to the channel:
 
-```clojure
-(def in (async/to-chan [1 2 (js/Error. "Err")]))
-(def out (async/chan))
 
-(async/pipeline 1 out (map inc) in)
-
-(go
- (try
-     (.log js/console (<? out)) ;; 2
-     (.log js/console (<? out)) ;; 3
-     (.log js/console (<? out)) ;; "Error: Err1" WTF?!1
- (catch js/Error e
-     (.error js/console e))) 
-```
-
-It happend because transducers are executing **before** the value would be send to the channel. Let see how it handled in RxJS:
-
-```js
-Rx.Observable.concat(Rx.Observable.fromArray([1,2]),
-                     Rx.Observable.throwException(new Error("Err")))
-    .map(v => v + 1)
-    .subscribe(v => console.log(v),
-               e => console.error(e))
-```
-
-RxJS has a concept of error which would avoid any attached process steps and goes directly to subscriber error handler (or throws if there is no such). In order to do the same we have to somehow avoid attached transducers and send `Error` value directly to the channel.
-
-There is one solution for that - we can stop thansducers chain using `reduced` value and at the same time send a value directly to core.async buffer using standard `add!` function. And now you can just put `t-err` as a first transducer:
-
-```clojure
-(def in (async/to-chan [1 2 (js/Error. "Err")]))
-(def out (async/chan))
-
-(async/pipeline 1 out (comp t-err (map inc)) in)
-
-(go
- (try
-     (.log js/console (<? out)) ;; 2
-     (.log js/console (<? out)) ;; 3
-     (.log js/console (<? out)) 
- (catch js/Error e
-     (.error js/console e))))   ;; Error: Err
-```
-
-# Making async life easier
-
-`rp-transducers.async` contains functions which simplifies your `core.async` code:
-
-- `flatmap(channel transducer)` - Handy for processing channel of channels. Be informed that channel is flattened using `into`, so it wouldn't work if you have a channel that produces channels infinitly
-- `pipe(ch transducer)` - Standard `core.async` `pipe` function doesn't apply transducer, while `pipeline` requires creating channel first. Just a shortcut
-- `<<<(func &args)` - Convert callback functions to a channel and feel free to attach transducers using `pipe`
-- `<?(ch on-error on-success)` - Extended version of error handler from David Nolen. When only one parameter passed - throws if value is js/Error. If second parameter is passed (could be just a value or a function) - it will be returned or called instead of throwing. If third parameter is passed - it will be returned or called in success scenario. Only CLJS supported currently (see [issue #1](https://github.com/artemyarulin/rp-transducers/issues/1))
 
 
