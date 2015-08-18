@@ -16,8 +16,8 @@ Reactive programming implemented using transducers. Supports Clojure and Clojure
         (<| map (partial str "/tmp/"))
         (<| filter is-exists)
         (<| map ls)
-        (<! take 3)
-        (<! (t-do println)))
+        (<| take 3)
+        (<| (t-do println)))
 
 ;; Output: /tmp/folder1/file0
 ;;         /tmp/folder1/file1
