@@ -16,10 +16,10 @@
   (let [in (async/to-chan [1 2 (Exception. "Err")])
         out (async/chan)]
     (async/pipeline 1 out (comp t-err (map inc)) in)
-    (go
-      (is (= 2 (async/<! out)))
-      (is (= 3 (async/<! out)))
-      (is (instance? Exception (async/<! out))))))
+    (async/<!! (go
+                 (is (= 2 (async/<! out)))
+                 (is (= 3 (async/<! out)))
+                 (is (instance? Exception (async/<! out)))))))
 
 (deftest t-err-unsupported-checks
   (try (into [] t-err [range 3])

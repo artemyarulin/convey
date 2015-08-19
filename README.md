@@ -13,10 +13,10 @@ Reactive programming implemented using transducers. Supports Clojure and Clojure
     (async/to-chan [(map (partial str abs-path "/file") (range 10))]))
 
 (convey folders
-        (<| map (partial str "/tmp/"))
+        (<| (map (partial str "/tmp/")))
         (<| filter is-exists)
         (<| map ls)
-        (<| take 3)
+        (<| (take 3))
         (<| (t-do println)))
 
 ;; Output: /tmp/folder1/file0
@@ -24,6 +24,23 @@ Reactive programming implemented using transducers. Supports Clojure and Clojure
 ;;         /tmp/folder1/file2
 ```
 
+# Roadmap
+
+## 1.0
+
+- [x] Sync transducers
+- [x] Async transducers
+- [x] Stateful transducers
+- [x] Error handling
+- [x] More tests
+- [ ] Readme
+
+## 1.1
+
+- [ ] Handling exceptions in steps
+- [ ] Makes test compatable with ClojureScript
+- [ ] Performance (compare with RxJS)
+- [ ] Leaks
 
 
 
