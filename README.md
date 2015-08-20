@@ -1,6 +1,6 @@
-# convey [![Circle CI](https://circleci.com/gh/artemyarulin/rp-transducers.svg?style=svg)](https://circleci.com/gh/artemyarulin/rp-transducers) 
+# convey [![Circle CI](https://circleci.com/gh/artemyarulin/convey.svg?style=svg)](https://circleci.com/gh/artemyarulin/convey) 
 
-[![Clojars Project](http://clojars.org/rp-transducers/latest-version.svg)](http://clojars.org/rp-transducers)
+[![Clojars Project](http://clojars.org/convey/latest-version.svg)](http://clojars.org/convey)
 
 Reactive programming implemented using transducers. Supports Clojure and ClojureScript
 
