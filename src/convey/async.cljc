@@ -1,24 +1,14 @@
-(ns rp-transducers.async
+(ns convey.async
   #?(:clj (:require [clojure.core.async :refer [go]])
      :cljs (:require-macros [cljs.core.async.macros :refer [go]]))
   (:require [#?(:clj  clojure.core.async
-                :cljs cljs.core.async) :as async :refer [<! chan pipeline close! put!]]))
+                :cljs cljs.core.async) :as async :refer [<! chan close! put! to-chan]]))
 
-(defn flatmap
-  "Receiving channel of channel unpack all the values and return new channel with 
-  merged all the values and applied transducer"
-  [ch xf]
-  (let [out (chan)
-        vals (async/into [] ch)]
-    (go (pipeline 1 out xf (async/merge (<! vals))))
-    out))
-
-(defn pipe
+(defn pipe                              
   "Pipes values from the channel using transducer"
   [ch xt]
-  (let [out (chan)]
-    (pipeline 1 out xt ch)
-    out))
+  (async/pipe ch (chan 1 xt)))
+
 
 (defn <<< 
   "Converts callback function to a channel"
@@ -30,6 +20,23 @@
                                     (put! c x)))]))
          (catch #?(:clj Exception :cljs js/Error) e (put! c e)))
     c))
+
+(defn flatmap
+  "Takes a channel of source channels and returns a channel which
+  contains all values taken from them.  The channel will close after all
+  the source channels have closed."
+  ([ch] (flatmap ch nil))
+  ([ch xf]
+   (let [out (async/chan 1 xf)]
+     (async/go-loop [cs [ch]]
+       (if-not (empty? cs)
+         (let [[v c] (async/alts! cs)]
+           (cond (nil? v) (recur (filterv #(not= c %) cs))
+                 (= c ch) (recur (conj cs v)) 
+                 :else (do (async/>! out v)
+                           (recur cs))))
+         (async/close! out)))
+     out)))
 
 #?(:clj
 (defmacro <?

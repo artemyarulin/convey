@@ -1,6 +1,6 @@
-(ns rp-transducers.core
+(ns convey.xf
   (:require [#?(:clj  clojure.core.async.impl.protocols
-                      :cljs cljs.core.async.impl.protocols) :refer [add! Buffer]]))
+                :cljs cljs.core.async.impl.protocols) :refer [add! Buffer]]))
 
 (defn t-do
   "Returns transducer which would execute function parameter as a side affect"
@@ -40,4 +40,3 @@
            (add! result input)
            (reduced result))
          (rf result input))))))
-

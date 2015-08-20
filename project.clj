@@ -1,6 +1,6 @@
-(defproject rp-transducers "0.0.9"
-  :description "A set of additional transducers inspired by reactive programming (specifically RxJS)"
-  :url "https://github.com/artemyarulin/rp-transducers"
+(defproject convey "1.0.0"
+  :description "Reactive programming implemented using transducers"
+  :url "https://github.com/artemyarulin/convey"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.7.0"]
