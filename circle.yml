@@ -1,0 +1,5 @@
+test:
+  override:
+    - lein deps
+    - lein test
+    - lein cljsbuild once

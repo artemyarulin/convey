@@ -28,14 +28,14 @@
   ([ch] (flatmap ch nil))
   ([ch xf]
    (let [out (async/chan 1 xf)]
-     (async/go-loop [cs [ch]]
+     (go (loop [cs [ch]]
        (if-not (empty? cs)
          (let [[v c] (async/alts! cs)]
            (cond (nil? v) (recur (filterv #(not= c %) cs))
                  (= c ch) (recur (conj cs v)) 
                  :else (do (async/>! out v)
                            (recur cs))))
-         (async/close! out)))
+         (async/close! out))))
      out)))
 
 #?(:clj
