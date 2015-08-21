@@ -1,4 +1,4 @@
-(defproject convey "1.0.0"
+(defproject convey "1.0.1"
   :description "Reactive programming implemented using transducers"
   :url "https://github.com/artemyarulin/convey"
   :license {:name "Eclipse Public License"
