@@ -67,3 +67,14 @@
     (<!!
      (go (is (= [err] (<! (async/into [] out))))))))
                     
+(deftest convey-empty-step-async
+  (let [f #(if (< % 2)
+             (to-chan [%])
+             (let [c (async/chan)]
+               (async/close! c)
+               c))
+        out (convey (to-chan (range 3))
+                    (<| map f))]
+    (<!!
+     (go (is (= [0 1] (<! (async/into [] out))))))))
+                    

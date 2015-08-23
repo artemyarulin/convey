@@ -11,13 +11,13 @@
 
 
 (defn <<< 
-  "Converts callback function to a channel"
+  "Converts callback function to a channel. Callback can be called only once, as a channel get closed right after"
   [f & args]
   (let [c (chan)]
     (try (apply f (concat args [(fn [x]
-                                  (if (or (nil? x) #?(:cljs (undefined? x)))
-                                    (close! c)
-                                    (put! c x)))]))
+                                  (when-not (or (nil? x) #?(:cljs (undefined? x)))
+                                    (put! c x))
+                                  (close! c))]))
          (catch #?(:clj Exception :cljs js/Error) e (put! c e)))
     c))
 
