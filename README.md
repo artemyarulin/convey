@@ -1,4 +1,4 @@
-# convey [![Circle CI](https://circleci.com/gh/artemyarulin/convey.svg?style=svg)](https://circleci.com/gh/artemyarulin/convey) 
+# convey [![Circle CI](https://circleci.com/gh/artemyarulin/convey.svg?style=svg)](https://circleci.com/gh/artemyarulin/convey) [![Downloads](https://jarkeeper.com/artemyarulin/convey/downloads.svg)](https://jarkeeper.com/artemyarulin/convey)
 
 [![Clojars Project](http://clojars.org/convey/latest-version.svg)](http://clojars.org/convey)
 
@@ -56,7 +56,6 @@ Main moving part is step function `<|`: It has 2 different arities:
 - [ ] Handling exceptions in steps
 - [ ] Makes test compatable with ClojureScript
 - [ ] Performance (compare with RxJS)
-- [ ] Leaks
 
 
 
